@@ -9,8 +9,7 @@
 #include "stm32f103xb.h"
 #include "gpio.h"
 
-void LED_Init(void)
-{
+void LED_Init(void) {
 	// Enable clock for GPIOC
 	RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
 
@@ -21,28 +20,24 @@ void LED_Init(void)
 	GPIOC->CRH |= GPIO_CRH_MODE13;
 }
 
-void LED_ON(void)
-{
+void LED_ON(void) {
 	GPIOC->BSRR = GPIO_BSRR_BR13;
 }
 
-void LED_OFF(void)
-{
+void LED_OFF(void) {
 	GPIOC->BSRR = GPIO_BSRR_BS13;
 }
 
-void LED_Toggle(void)
-{
+void LED_Toggle(void) {
 	GPIOC->ODR ^= GPIO_ODR_ODR13;
 }
 
-void Delay_ms(uint32_t ms)
-{
-    // At 72MHz, ~7200 cycles per ms
-    const uint32_t cycles_per_ms = 7200;
+void Delay_ms(uint32_t ms) {
+	// At 72MHz, ~7200 cycles per ms
+	const uint32_t cycles_per_ms = 7200;
 
-    for(uint32_t i = 0; i < (ms * cycles_per_ms); i++)
-    {
-        __asm__("nop");  // Waste one cycle
-    }
+	for (uint32_t i = 0; i < (ms * cycles_per_ms); i++) {
+		__asm__("nop");
+		// Waste one cycle
+	}
 }
