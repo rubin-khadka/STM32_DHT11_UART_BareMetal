@@ -19,6 +19,10 @@ volatile UART_Buffer_t usart1_rx_buf;
 volatile UART_Buffer_t usart1_tx_buf;
 
 void USART1_Init(void) {
+
+	// Enable clock for GPIOA and alternate function
+	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_IOPAEN;
+
 	// Enable USART1 peripheral
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
 
