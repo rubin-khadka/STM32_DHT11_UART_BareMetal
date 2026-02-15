@@ -13,8 +13,8 @@
 #define USART1_TX_BUF_SIZE 256  // TX buffer size
 
 // Global buffer instances for USART1
-uint8_t usart1_rxbuf_storage[USART1_RX_BUF_SIZE];
-uint8_t usart1_txbuf_storage[USART1_TX_BUF_SIZE];
+static uint8_t usart1_rxbuf_storage[USART1_RX_BUF_SIZE];
+static uint8_t usart1_txbuf_storage[USART1_TX_BUF_SIZE];
 volatile UART_Buffer_t usart1_rx_buf;
 volatile UART_Buffer_t usart1_tx_buf;
 
@@ -35,11 +35,11 @@ void USART1_Init(void) {
 	GPIOA->CRH &= ~(GPIO_CRH_CNF10 | GPIO_CRH_MODE10);// Clear both CNF and MODE
 	GPIOA->CRH |= GPIO_CRH_CNF10_0;	// CNF = 01 (Floating input)
 
+		// Disable USART1 temporarily
+	USART1->CR1 &= ~USART_CR1_UE;
+
 	// Set Baud Rate
 	USART1->BRR = 0x271; // 115200 baud rate
-
-	// Disable USART1 temporarily
-	USART1->CR1 &= ~USART_CR1_UE;
 
 	// Clear any pending flags
 	USART1->SR = 0;
