@@ -30,11 +30,56 @@ int main(void)
 	LED_Init();
 	USART1_Init();
 
-	while(1)
-	{
-		LED_ON();
-		Delay_ms(500);
-		LED_OFF();
-		Delay_ms(500);
+	// Send welcome message character by character
+	    char welcome[] = "\r\n========== STM32 UART Test ==========\r\n"
+	                     "UART Initialized with Circular Buffers\r\n"
+	                     "Type any character - I'll echo it back\r\n"
+	                     "Press ENTER to see new line\r\n"
+	                     "======================================\r\n";
+
+	    // Write welcome message to TX buffer
+	    for(int i = 0; welcome[i] != '\0'; i++)
+	    {
+	        // Wait if buffer is full
+	        while(USART1_BufferFull(&usart1_tx_buf));
+	        USART1_BufferWrite(&usart1_tx_buf, welcome[i]);
+	    }
+
+	    // Enable TX interrupt to start sending
+	    USART1->CR1 |= USART_CR1_TXEIE;
+
+	    // Variables for echo handling
+	    uint8_t received_char;
+
+	    while(1)
+	    {
+	        // Check if any data received
+	        if(!USART1_BufferEmpty(&usart1_rx_buf))
+	        {
+	            // Read character from RX buffer
+	            received_char = USART1_BufferRead(&usart1_rx_buf);
+
+	            // Wait if TX buffer is full
+	            while(USART1_BufferFull(&usart1_tx_buf));
+
+	            // Echo the character back
+	            USART1_BufferWrite(&usart1_tx_buf, received_char);
+
+	            // If carriage return, also send newline
+	            if(received_char == '\r')
+	            {
+	                while(USART1_BufferFull(&usart1_tx_buf));
+	                USART1_BufferWrite(&usart1_tx_buf, '\n');
+	            }
+
+	            // Make sure TX interrupt is enabled
+	            if(!(USART1->CR1 & USART_CR1_TXEIE))
+	            {
+	                USART1->CR1 |= USART_CR1_TXEIE;
+	            }
+	        }
+
+	        // Small delay to prevent tight loop
+	        Delay_ms(1);
+	    }
 	}
-}
