@@ -5,7 +5,8 @@
  *      Author: Rubin Khadka
  */
 
-#include "stm32f103xb.h"
+#include "stm32f10x.h"	// Device header
+#include "core_cm3.h"
 #include "uart.h"
 
 // Define buffer size
@@ -96,6 +97,7 @@ bool USART1_BufferWrite(volatile UART_Buffer_t *buff, uint8_t data) {
 
 uint8_t USART1_BufferRead(volatile UART_Buffer_t *buff) {
 	uint32_t primask = __get_PRIMASK();
+	uint8_t data;
 	__disable_irq();
 
 	if (USART1_BufferEmpty(buff)) {
@@ -103,7 +105,7 @@ uint8_t USART1_BufferRead(volatile UART_Buffer_t *buff) {
 		return 0;
 	}
 
-	uint8_t data = buff->buffer[buff->tail];
+	data = buff->buffer[buff->tail];
 	buff->tail = (buff->tail + 1) % buff->size;
 	buff->count--;
 
@@ -111,19 +113,40 @@ uint8_t USART1_BufferRead(volatile UART_Buffer_t *buff) {
 	return data;
 }
 
+void USART1_SendData(uint8_t data) 
+{
+	// Write to buffer
+	USART1_BufferWrite(&usart1_tx_buf, data);
+	
+	// Enable TXE interrupt to start transmission
+	USART1->CR1 |= USART_CR1_TXEIE;
+}
+
+// Or for sending strings:
+void USART1_SendString(char *str) 
+{
+	while (*str)
+	{
+		USART1_SendData((uint8_t)*str++);
+	}
+}
+
 // Interrupt Functions
 void USART1_IRQHandler(void) {
 	// Check if RXNE interrupt
 	if (USART1->SR & USART_SR_RXNE) {
-		uint8_t data = USART1->DR;
+		uint8_t data = (uint8_t) USART1->DR;
 		USART1_BufferWrite(&usart1_rx_buf, data);
 	}
 
 	// TX interrupt - reads from TX buffer
 	if ((USART1->CR1 & USART_CR1_TXEIE) && (USART1->SR & USART_SR_TXE)) {
 		if (!USART1_BufferEmpty(&usart1_tx_buf)) {
-			uint8_t data = USART1_BufferRead(&usart1_tx_buf); // READS from TX buffer
+			uint8_t data = USART1_BufferRead(&usart1_tx_buf);
 			USART1->DR = data;
+		} else {
+			// Disable TXE interrupt when buffer is empty
+			USART1->CR1 &= ~USART_CR1_TXEIE;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 
  */
 
-#include "stm32f103xb.h"
+#include "stm32f10x.h"	// Device header
 #include "gpio.h"
 
 void LED_Init(void) {

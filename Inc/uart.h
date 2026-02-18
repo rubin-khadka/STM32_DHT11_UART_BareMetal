@@ -13,8 +13,8 @@
 
 // Circular Buffer Structure for USART1
 typedef struct {
-	uint8_t *buffer; 			// Pointer to buffer memory
-	uint16_t size;   			// Total buffer size
+	uint8_t *buffer; 				// Pointer to buffer memory
+	uint16_t size;   				// Total buffer size
 	volatile uint16_t head;   	// Write Position
 	volatile uint16_t tail;   	// Read Position
 	volatile uint16_t count;  	// Number of bytes in the buffer
@@ -34,6 +34,8 @@ void USART1_BufferInit(volatile UART_Buffer_t *buff, uint8_t *storage,
 bool USART1_BufferFull(volatile UART_Buffer_t *buff);
 bool USART1_BufferEmpty(volatile UART_Buffer_t *buff);
 bool USART1_BufferWrite(volatile UART_Buffer_t *buff, uint8_t data);
+void USART1_SendData(uint8_t data);
+void USART1_SendString(char *str);
 uint8_t USART1_BufferRead(volatile UART_Buffer_t *buff);
 
 // Interrupt function
