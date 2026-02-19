@@ -5,7 +5,7 @@
  *      Author: Rubin Khadka
  */
 
-#include "stm32f10x.h"	// Device header
+#include "stm32f103xb.h"
 #include "stdint.h"
 
 // System Core Clock Frequency

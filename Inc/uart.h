@@ -1,44 +1,47 @@
 /*
  * uart.h
  *
- *  Created on: Feb 14, 2026
+ *  Created on: Feb 18, 2026
  *      Author: Rubin Khadka
  */
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef UART_H
+#define UART_H
 
 #include "stdint.h"
 #include "stdbool.h"
 
-// Circular Buffer Structure for USART1
+// Buffer structure
 typedef struct {
-	uint8_t *buffer; 				// Pointer to buffer memory
-	uint16_t size;   				// Total buffer size
-	volatile uint16_t head;   	// Write Position
-	volatile uint16_t tail;   	// Read Position
-	volatile uint16_t count;  	// Number of bytes in the buffer
-	volatile bool overflow;   	// Overflow flag
-} UART_Buffer_t;
+	uint8_t *buffer;
+	uint16_t size;
+	volatile uint16_t head;
+	volatile uint16_t tail;
+	volatile uint16_t count;
+} USART1_Buffer_t;
 
-// External declarations
-extern volatile UART_Buffer_t usart1_rx_buf;
-extern volatile UART_Buffer_t usart1_tx_buf;
+/* External declarations */
+extern volatile USART1_Buffer_t usart1_rx_buf;
+extern volatile USART1_Buffer_t usart1_tx_buf;
 
-// Function Definitions
+// Function declarations
 void USART1_Init(void);
-
-// Core buffer functions
-void USART1_BufferInit(volatile UART_Buffer_t *buff, uint8_t *storage,
+void UART1_BufferInit(volatile USART1_Buffer_t *buff, uint8_t *storage,
 		uint16_t size);
-bool USART1_BufferFull(volatile UART_Buffer_t *buff);
-bool USART1_BufferEmpty(volatile UART_Buffer_t *buff);
-bool USART1_BufferWrite(volatile UART_Buffer_t *buff, uint8_t data);
-void USART1_SendData(uint8_t data);
-void USART1_SendString(char *str);
-uint8_t USART1_BufferRead(volatile UART_Buffer_t *buff);
 
-// Interrupt function
+// ONE set of buffer functions that work with ANY buffer (using pointers)
+bool USART1_BufferEmpty(volatile USART1_Buffer_t *buff);
+bool USART1_BufferFull(volatile USART1_Buffer_t *buff);
+bool USART1_BufferWrite(volatile USART1_Buffer_t *buff, uint8_t data);
+uint8_t USART1_BufferRead(volatile USART1_Buffer_t *buff);
+
+// High-level functions (these will use the buffer functions)
+void USART1_SendChar(char c);
+void USART1_SendString(char *str);
+uint8_t USART1_GetChar(void);  // Get a character from RX buffer
+bool USART1_DataAvailable(void);  // Check if RX data is available
+
+// Interrupt handler
 void USART1_IRQHandler(void);
 
-#endif /* UART_H_ */
+#endif /* UART_H */
