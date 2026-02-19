@@ -3,3 +3,7 @@
 # STM32CubeIDE Build Outputs
 .settings/
 Debug/
+
+Project Backups/
+
+*.workspace

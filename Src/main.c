@@ -33,7 +33,7 @@ int main(void)
     USART1_Init();
     DHT11_Init();
 
-    // DHT11 DATA pin DISCONNECTED for this test!
+    USART1_SendString("Test\r\n");
 
     while(1)
     {
