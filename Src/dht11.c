@@ -6,118 +6,98 @@
  */
 
 #include "stm32f103xb.h"
-#include "dht11.h"
 #include "timer1.h"
-#include "uart.h"
 
+// Pin definitions
+#define DHT11_GPIO      GPIOB
+#define DHT11_PIN       0
 
-// Initialize DHT11 pin
+// Pin operations
+#define DHT11_HIGH()    (DHT11_GPIO->BSRR = GPIO_BSRR_BS0)
+#define DHT11_LOW()     (DHT11_GPIO->BRR = GPIO_BRR_BR0)
+#define DHT11_READ()    ((DHT11_GPIO->IDR >> 0) & 1)
+
 void DHT11_Init(void) {
-	// Enable clock
+	// Enable GPIOB clock
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
 
-	// Configure GPIO PB0 for DHT11
-	GPIOB->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
-	GPIOB->CRL |= GPIO_CRL_MODE0_0;
-
-	// Set pin high initially
-	DHT11_SET_HIGH();
+	// Set as output, high initially
+	DHT11_GPIO->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+	DHT11_GPIO->CRL |= GPIO_CRL_MODE0_0;  // Output 10MHz
+	DHT11_HIGH();
 }
 
-int DHT11_Start(void)
-{
-    uint32_t timeout;
+void DHT11_Start(void) {
+	// Set as output
+	DHT11_GPIO->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+	DHT11_GPIO->CRL |= GPIO_CRL_MODE0_0;  // Output
 
-    USART1_SendString("Step 1: Sending start signal...\r\n");
+	// Pull LOW for 18ms
+	DHT11_LOW();
+	TIMER1_Delay_ms(18);
 
-    // Send start signal
-    DHT11_OUTPUT();
-    DHT11_SET_LOW();
-    TIMER1_Delay_ms(20);
-    DHT11_SET_HIGH();
-    TIMER1_Delay_us(30);
-    DHT11_INPUT();
+	// Pull HIGH for 20µs
+	DHT11_HIGH();
+	TIMER1_Delay_us(20);
 
-    // ===== DEBUG: Check line state after releasing =====
-    if(DHT11_READ()) {
-        USART1_SendString("  Line is HIGH after release (good)\r\n");
-    } else {
-        USART1_SendString("  Line is LOW after release (bad - pull-up?)\r\n");
-    }
-
-    // Step 1: Wait for sensor to pull LOW
-    USART1_SendString("Step 2: Waiting for sensor to pull LOW...\r\n");
-    timeout = 200;
-    while(DHT11_READ())
-    {
-        if(--timeout == 0) {
-            USART1_SendString("  TIMEOUT at step 1 - never went LOW\r\n");
-            return 0;
-        }
-    }
-    USART1_SendString("  ✓ Got LOW\r\n");
-
-    // Step 2: Wait for LOW to end (sensor pulls HIGH)
-    USART1_SendString("Step 3: Waiting for sensor to pull HIGH...\r\n");
-    timeout = 200;
-    while(!DHT11_READ())
-    {
-        if(--timeout == 0) {
-            USART1_SendString("  TIMEOUT at step 2 - never went HIGH\r\n");
-            return 0;
-        }
-    }
-    USART1_SendString("  ✓ Got HIGH\r\n");
-
-    // Step 3: Wait for HIGH to end (sensor pulls LOW again)
-    USART1_SendString("Step 4: Waiting for final LOW...\r\n");
-    timeout = 200;
-    while(DHT11_READ())
-    {
-        if(--timeout == 0) {
-            USART1_SendString("  TIMEOUT at step 3 - stuck HIGH\r\n");
-            return 0;
-        }
-    }
-    USART1_SendString("  ✓ Got final LOW\r\n");
-
-    USART1_SendString("✓ Sensor responded successfully!\r\n");
-    return 1;
+	// Set as input (let sensor respond)
+	DHT11_GPIO->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+	DHT11_GPIO->CRL |= GPIO_CRL_CNF0_0;  // Input floating
 }
 
-void Debug_CheckRegisters(void)
-{
-    USART1_SendString("\r\n=== REGISTER DEBUG ===\r\n");
+int DHT11_Check_Response(void) {
+	TIMER1_Delay_us(40);  // Wait 40µs
 
-    // Check GPIOB clock
-    if(RCC->APB2ENR & RCC_APB2ENR_IOPBEN)
-        USART1_SendString("✓ GPIOB clock: ENABLED\r\n");
-    else
-        USART1_SendString("✗ GPIOB clock: DISABLED\r\n");
+	// Check if sensor pulled LOW
+	if (!DHT11_READ()) {
+		TIMER1_Delay_us(80);  // Wait 80µs (LOW pulse)
 
-    // Check CRL register (PB0 configuration)
-    uint32_t crl = GPIOB->CRL;
-    uint32_t pb0_config = (crl >> 0) & 0xF;  // Get bits 0-3
+		if (DHT11_READ())  // Should be HIGH now
+				{
+			// Wait for HIGH to end
+			uint32_t timeout = 500;
+			while (DHT11_READ()) {
+				if (--timeout == 0)
+					return 0;
+			}
+			return 1;  // Response OK
+		}
+	}
+	return 0;  // No response
+}
 
-    USART1_SendString("PB0 config bits: ");
-    if(pb0_config == 0x1)
-        USART1_SendString("0x1 (Output 10MHz, push-pull)\r\n");
-    else if(pb0_config == 0x4)
-        USART1_SendString("0x4 (Input floating)\r\n");
-    else if(pb0_config == 0x0)
-        USART1_SendString("0x0 (Input analog)\r\n");
-    else
-    {
-        USART1_SendString("0x");
-        // Send hex value - you'll need a hex print function
-    }
+uint8_t DHT11_Read(void) {
+	uint8_t data = 0;
+	uint32_t timeout;
 
-    // Read IDR directly
-    uint32_t idr = GPIOB->IDR;
-    if(idr & 1)
-        USART1_SendString("✓ PB0 current state: HIGH (1)\r\n");
-    else
-        USART1_SendString("✗ PB0 current state: LOW (0)\r\n");
+	for (int bit = 7; bit >= 0; bit--) {
+		// Wait for pin to go HIGH (start of bit)
+		timeout = 500;
+		while (!DHT11_READ()) {
+			if (--timeout == 0)
+				return 0;
+		}
 
-    USART1_SendString("=== DEBUG END ===\r\n\r\n");
+		// Wait 40µs into the HIGH pulse
+		TIMER1_Delay_us(40);
+
+		// Check if pin is still HIGH
+		if (DHT11_READ()) {
+			// Still HIGH after 40µs = this is a 1 (70µs pulse)
+			data |= (1 << bit);
+
+			// Wait for the rest of the HIGH pulse to end
+			timeout = 500;
+			while (DHT11_READ()) {
+				if (--timeout == 0)
+					return 0;
+			}
+		} else {
+			// Pin went LOW already = this is a 0 (26µs pulse)
+			// No need to set bit, just wait for next bit
+			// The pin is already LOW, so next bit will start soon
+		}
+	}
+
+	return data;
 }
