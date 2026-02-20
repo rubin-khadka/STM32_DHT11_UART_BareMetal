@@ -92,18 +92,9 @@ Instead of using sprintf() which is computational heavy and increases code size,
 
 🔗 [View Utility Functions Source Code](https://github.com/rubin-khadka/STM32_DHT11_UART_BareMetal/blob/main/Src/utils.c)
 
-## Project Schematic Diagram
-<img width="1223" height="656" alt="STM32_Digital_Thermometer_Schematic_complete" src="https://github.com/rubin-khadka/STM32_DHT11_UART_BareMetal/blob/main/Assets/simple_project_schematic.png" />
-*Schematic designed using EasyEDA*
-
-The schematic shows the complete STM32F103C8T6 implementation including:
-- Core Blue Pill circuits: Power supply, 8MHz and RTC clock, reset circuit, decoupling and BOOT circuit
-- Display driver: Two daisy-chained 74HC595 shift registers controlling the 4-digit 7-segment display
-- Temperature sensing: LM35 sensor with voltage divider for negative temperature measurement
-
 ## Project Schematic
 
-<img width="957" height="402" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/105ccc9c-9f7d-4265-8d81-81eb34340cc1" />
+<img width="1100" height="478" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/020f7b81-2233-4aad-8f89-412f657e50ee" />
 
 *Schematic designed using EasyEDA*
 
