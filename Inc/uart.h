@@ -41,6 +41,8 @@ void USART1_SendString(char *str);
 uint8_t USART1_GetChar(void);  // Get a character from RX buffer
 bool USART1_DataAvailable(void);  // Check if RX data is available
 
+void USART1_SendNumber(uint32_t num);
+
 // Interrupt handler
 void USART1_IRQHandler(void);
 

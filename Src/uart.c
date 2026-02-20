@@ -26,8 +26,8 @@ void USART1_Init(void) {
 	// Disable USART
 	USART1->CR1 &= ~USART_CR1_UE;
 
-	// 9600 baud @ 8MHz
-	USART1->BRR = 0x341;
+	// 115200 baud @ 8MHz
+	USART1->BRR = 0x271;
 
 	// Clear status
 	USART1->SR = 0;
@@ -125,6 +125,36 @@ bool USART1_DataAvailable(void) {
 // Get a character from RX buffer
 uint8_t USART1_GetChar(void) {
 	return USART1_BufferRead(&usart1_rx_buf);
+}
+
+/**
+ * @brief  Send a 32-bit number as ASCII string via UART
+ * @param  num: Number to send (0-4294967295)
+ */
+void USART1_SendNumber(uint32_t num)
+{
+    char buffer[16];
+    int i = 0;
+
+    // Handle 0 separately
+    if(num == 0)
+    {
+        USART1_SendChar('0');
+        return;
+    }
+
+    // Convert number to string (reverse order)
+    while(num > 0)
+    {
+        buffer[i++] = '0' + (num % 10);
+        num /= 10;
+    }
+
+    // Send in correct order
+    while(i > 0)
+    {
+        USART1_SendChar(buffer[--i]);
+    }
 }
 
 void USART1_IRQHandler(void) {

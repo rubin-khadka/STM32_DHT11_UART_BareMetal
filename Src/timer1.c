@@ -13,9 +13,9 @@ void TIMER1_Init(void)
 	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
 
 	// Configure for 1 microsecond base
-	TIM1->PSC = 7;
+	TIM1->PSC = 71;
 
-	// Disable interrupt 
+	// Disable interrupt
 	TIM1->DIER &= ~TIM_DIER_UIE;
 
 	// Stop timer initially
