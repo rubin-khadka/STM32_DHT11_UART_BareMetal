@@ -101,6 +101,17 @@ The schematic shows the complete STM32F103C8T6 implementation including:
 - Display driver: Two daisy-chained 74HC595 shift registers controlling the 4-digit 7-segment display
 - Temperature sensing: LM35 sensor with voltage divider for negative temperature measurement
 
+## Project Schematic
+
+<img width="957" height="402" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/105ccc9c-9f7d-4265-8d81-81eb34340cc1" />
+
+*Schematic designed using EasyEDA*
+
+The schematic shows the simple STM32F103C8T6 implementation including:
+- **8MHz HSE clock circuit** (for 72MHz operation)
+- **DHT11 sensor connection** (PB0 for data)
+- **UART interface** (PA9/PA10 for USB-to-Serial)
+
 ## Getting Started
 
 ### Prerequisites
