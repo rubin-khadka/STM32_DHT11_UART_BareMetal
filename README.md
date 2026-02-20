@@ -8,9 +8,11 @@
 ## Video Demonstrations
 
 **Hardware Demo**  
+
 https://github.com/user-attachments/assets/4d8c22fa-11c4-4e12-b30f-000ceb8ef572
 
 **UART Output**  
+
 https://github.com/user-attachments/assets/48de6ca8-5985-420c-825a-51685881ee41
 
 *Real hardware test - hand on sensor increases temperature/humidity*<br>
@@ -138,7 +140,7 @@ DHT11 SENSOR READER
 ## Resources
 - [STM32F103 Datasheet](https://www.st.com/resource/en/datasheet/stm32f103c8.pdf)
 - [STM32F103 Reference Manual](https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
--[DHT11 Sensor Datasheet](https://www.mouser.com/datasheet/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf)
+- [DHT11 Sensor Datasheet](https://www.mouser.com/datasheet/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf)
 
 ## Project Status
 - **Status**: Complete
