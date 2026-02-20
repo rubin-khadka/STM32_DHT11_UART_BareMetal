@@ -92,6 +92,15 @@ Instead of using sprintf() which is computational heavy and increases code size,
 
 🔗 [View Utility Functions Source Code](https://github.com/rubin-khadka/STM32_DHT11_UART_BareMetal/blob/main/Src/utils.c)
 
+## Project Schematic
+
+<img width="957" height="402" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/105ccc9c-9f7d-4265-8d81-81eb34340cc1" />
+
+*Schematic designed using EasyEDA*
+
+The schematic shows the simple STM32F103C8T6 implementation including:
+
+- 
 ## Getting Started
 
 ### Prerequisites
