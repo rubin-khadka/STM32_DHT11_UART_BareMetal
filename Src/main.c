@@ -38,10 +38,13 @@ int main(void) {
 	TIMER2_Delay_ms(1000);
 
 	// Main Loop
-
 	while (1) {
 		read_count++;
 		int success = 0;
+
+		// Disable Interrupts for the entire DHT11 transaction
+		uint32_t primask = __get_PRIMASK();
+		__disable_irq();
 
 		// Try up to MAX_RETRIES times
 		for (int retry = 0; retry < MAX_RETRIES; retry++) {
@@ -67,6 +70,10 @@ int main(void) {
 			TIMER1_Delay_ms(100);
 		}
 
+		// Re-enable interrupts after DHT11 communication
+		__set_PRIMASK(primask);
+
+		// Process results with interrupts enabled
 		if (success) {
 			format_reading(read_count, temp_byte1, temp_byte2, hum_byte1,
 					hum_byte2, output_buff);
@@ -78,4 +85,3 @@ int main(void) {
 		TIMER2_Delay_ms(2000);
 	}
 }
-
