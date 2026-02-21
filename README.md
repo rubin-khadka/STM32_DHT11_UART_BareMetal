@@ -94,7 +94,7 @@ Instead of using sprintf() which is computational heavy and increases code size,
 
 ## Project Schematic
 
-<img width="957" height="402" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/105ccc9c-9f7d-4265-8d81-81eb34340cc1" />
+<img width="1100" height="478" alt="STM32_DHT11_UART_Schematic" src="https://github.com/user-attachments/assets/020f7b81-2233-4aad-8f89-412f657e50ee" />
 
 *Schematic designed using EasyEDA*
 
