@@ -52,7 +52,7 @@ For a **HAL-based version** of this project with LCD 16x2 display:<br>
 | Timer | Resolution | Purpose |
 |-------|------------|---------|
 | **TIMER1** | 1µs | DHT11 timing (microsecond precision) |
-| **TIMER2** | 1ms | longer delays between readings |
+| **TIMER2** | 0.1ms | longer delays between readings (1 sec) |
 
 ### UART Communication
 
@@ -75,7 +75,7 @@ Instead of measuring pulse width, I used a **simpler approach** looking at datas
 For each bit:
 1. Wait for line to go HIGH
 2. Delay exactly 40µs
-3. If line still HIGH → logic 1
+3. If line still HIGH → logic 1 <br>
    If line is LOW → logic 0
 
 To ensure the timing is not interrupted, **interrupts are disabled** while communicating with the sensor. The checksum provided by the sensor is used to verify data integrity.
