@@ -160,7 +160,7 @@ DHT11 SENSOR READER
 
 ## Contact
 **Rubin Khadka Chhetri**  
-📧 rubin.robotic@gmail.com  
+📧 rubin.khadka84@gmail.com <br>
 🐙 GitHub: https://github.com/rubin-khadka
 
 ## Related Project
