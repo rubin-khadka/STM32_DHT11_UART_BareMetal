@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/4d8c22fa-11c4-4e12-b30f-000ceb8ef572
 
 **UART Output**  
 
-https://github.com/user-attachments/assets/48de6ca8-5985-420c-825a-51685881ee41
+https://github.com/user-attachments/assets/07928a4b-c16d-42ba-9b53-f7fe76d27c5b
 
 *Real hardware test - hand on sensor increases temperature/humidity*<br>
 *Serial monitor showing readings at 115200 baud*
